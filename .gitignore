@@ -1,0 +1,22 @@
+# Local Python environment
+.venv/
+__pycache__/
+*.py[cod]
+
+# Large or generated data
+dataset/
+prepared/
+hadoop/
+
+# Spark and local runtime noise
+*.log
+.ipynb_checkpoints/
+.spark-warehouse/
+metastore_db/
+derby.log
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
