@@ -1,27 +1,40 @@
 # TSVD zadanie
 
-Riesenie zadania pre predmet Technologie spracovania velkych dat.
+Zjednodusene riesenie zadania z predmetu **Technologie spracovania velkych dat**.
 
-## Struktura
+Cele riesenie je v jednom notebooku:
 
-- `dataset/` - povodne vstupy: `priebehy.parquet`, `Poruchy.xlsx`, `popis_dat.docx`
-- `prepared/` - Spark-citatelne vstupy vytvorene helperom
-- `src/prepare_inputs.py` - technicka priprava vstupov:
-  - konverzia Parquet timestampu z nanosekund na mikrosekundy pre Spark 3.5
-  - konverzia Excel evidencie poruch na CSV
-- `src/tsvd_pipeline.py` - hlavna PySpark pipeline pre integraciu, predspracovanie, transformaciu, trenovanie a vyhodnotenie
-- `notebooks/TSVD_zadanie.ipynb` - notebookovy sprievodca riesenim
-- `outputs/` - vystupy po spusteni pipeline
+- `TSVD_zadanie.ipynb`
 
-## Spustenie
+Notebook obsahuje:
 
-Najprv vloz vstupne subory do priecinka `dataset/`:
+- nacitanie dat,
+- integraciu poruch s priebehmi prudov a napati,
+- 10 % stratifikovany sampling,
+- pracu s chybajucimi hodnotami a outliermi,
+- popisne charakteristiky,
+- transformaciu merani na denne priebehy,
+- train/test rozdelenie,
+- korelacie a vyber atributov,
+- trenovanie 3 binarnych klasifikatorov,
+- trenovanie 3 multiclass klasifikatorov,
+- kontingencne tabulky, precision, recall, F1 a MCC.
+
+## Data
+
+Vstupne subory nie su v repozitari. Pred spustenim ich vloz do priecinka:
+
+```text
+C:\TSVD_zadanie\dataset
+```
+
+Ocakavane subory:
 
 - `priebehy.parquet`
 - `Poruchy.xlsx`
 - `popis_dat.docx`
 
-Potom vytvor virtualne prostredie a nainstaluj zavislosti:
+## Instalacia
 
 ```powershell
 cd C:\TSVD_zadanie
@@ -29,45 +42,19 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-```powershell
-cd C:\TSVD_zadanie
-.\.venv\Scripts\python.exe .\src\tsvd_pipeline.py --sample-fraction 0.10 --top-n-features 20
-```
-
-Notebook:
+## Spustenie notebooku
 
 ```powershell
 cd C:\TSVD_zadanie
-.\.venv\Scripts\python.exe -m notebook .\notebooks\TSVD_zadanie.ipynb
+.\.venv\Scripts\python.exe -m notebook TSVD_zadanie.ipynb
 ```
 
-## Metodicke rozhodnutia
+## Poznamka
 
-- Poruchy sa integruju intervalovym joinom podla `eic` a casu merania.
-- Ak je na jednom odbernom mieste naraz viac poruch, uklada sa mnozina typov poruch.
-- Binarny ciel `target_binary` je 1, ak v danom case/dni existuje aspon jedna porucha.
-- Multiclass ciel `target_multiclass` je kombinacia sucasnych typov poruch, napriklad `1+4`; bez poruchy je `0`.
-- Otvorene intervaly poruch sa doplnaju hranicami dostupnych merani.
-- Denné priebehy sa tvoria iba pre cele dni s aspon 144 desatminutovymi meraniami.
-- Den s poruchou je oznaceny ako poruchovy, ak sa porucha vyskytla aspon v jednom merani daneho dna.
-- Outliery sa spracuju winsorizaciou cez IQR hranice.
-- Chybajuce numericke hodnoty sa nahradia medianom.
-- Vyber atributov je robeny cez dolezitost atributov z Random Forest modelu.
+Povodny Parquet subor ma cas ulozeny ako nanosekundovy timestamp. Spark 3.5 ho nevie na Windowse priamo nacitat, preto notebook na zaciatku vytvori lokalnu kopiu:
 
-## Aktualne overene vysledky
+```text
+prepared/priebehy_spark.parquet
+```
 
-Finalny beh s `--sample-fraction 0.10 --top-n-features 20` prebehol uspesne:
-
-- pocet merani: 7 659 371
-- pocet riadkov v stratifikovanej vzorke: 764 928
-- pocet denných priebehov: 52 449
-- train/test: 41 958 / 10 491
-- najlepsi binarny model: `gradient_boosted_trees`, F1 = 0.9772, MCC = 0.9549
-- najlepsi multiclass model: `random_forest`, F1 = 0.9548, MCC = 0.9335
-
-Detailne metriky su v:
-
-- `outputs/binary_model_metrics.csv`
-- `outputs/multiclass_model_metrics.csv`
-- `outputs/binary_confusion_tables.csv`
-- `outputs/multiclass_confusion_tables.csv`
+Tento priecinok je generovany automaticky a nie je sucastou GitHub repozitara.
