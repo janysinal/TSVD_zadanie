@@ -1,8 +1,4 @@
-# TSVD zadanie
-
-Zjednodusene riesenie zadania z predmetu **Technologie spracovania velkych dat**.
-
-Cele riesenie je v jednom notebooku:
+Cele riesenie je v notebooku:
 
 - `TSVD_zadanie.ipynb`
 
@@ -22,13 +18,7 @@ Notebook obsahuje:
 
 ## Data
 
-Vstupne subory nie su v repozitari. Pred spustenim ich vloz do priecinka:
-
-```text
-C:\TSVD_zadanie\dataset
-```
-
-Ocakavane subory:
+Vstupne subory:
 
 - `priebehy.parquet`
 - `Poruchy.xlsx`
@@ -56,5 +46,3 @@ Povodny Parquet subor ma cas ulozeny ako nanosekundovy timestamp. Spark 3.5 ho n
 ```text
 prepared/priebehy_spark.parquet
 ```
-
-Tento priecinok je generovany automaticky a nie je sucastou GitHub repozitara.
